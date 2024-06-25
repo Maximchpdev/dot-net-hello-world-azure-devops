@@ -38,6 +38,7 @@ steps:
     packDirectory: '$(Build.ArtifactStagingDirectory)'
     versionEnvVar: 'nugetVersion'
     versioningScheme: 'byEnvVar'
+    nobuild: true
 
 - task: NuGetAuthenticate@1
   displayName: 'NuGet Authenticate'
