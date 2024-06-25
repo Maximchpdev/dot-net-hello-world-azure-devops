@@ -35,10 +35,10 @@ steps:
   displayName: "dotnet pack"
   inputs:
     command: 'pack'
-    arguments: '--configuration $(buildConfiguration) /p:PackageVersion=$(versionNumber) --output $(Build.ArtifactStagingDirectory)/$(Build.BuildId)/'
-    packagesToPack: '**/*.csproj'
-    nobuild: true
-    versioningScheme: 'off'
+    configuration: $(BuildConfiguration)
+    packagesToPack: '**/$(ProjectName)*.csproj'
+    packDirectory: '$(build.artifactStagingDirectory)'
+    versioningScheme: byBuildNumber # https://learn.microsoft.com/en-us/azure/devops/pipelines/tasks/build/dotnet-core-cli?view=azure-devops#yaml-snippet
 
 #- task: NuGetCommand@2
 #  displayName: 'nuget pack'
@@ -56,7 +56,7 @@ steps:
   inputs:
     command: 'push'
     feedsToUse: 'select'
-    packagesToPush: '$(Build.ArtifactStagingDirectory)/$(Build.BuildId)/**/*.nupkg;!$(Build.ArtifactStagingDirectory)/$(Build.BuildId)/**/*.symbols.nupkg'
+    packagesToPush: '$(Build.ArtifactStagingDirectory)/**/*.nupkg;!$(Build.ArtifactStagingDirectory)/**/*.symbols.nupkg'
     nuGetFeedType: 'internal'
     publishVstsFeed: 'Dot Net Hello World/my-artifacts'
     vstsFeed: 'Dot Net Hello World/my-artifacts'
