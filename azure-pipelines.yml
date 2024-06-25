@@ -17,12 +17,6 @@ variables:
   nugetVersion: '$(major).$(minor).$(revision)'
   buildConfiguration: 'Release'
 
-  #versionNumber: '1.0.0'
-  #Major: '1'
-  #Minor: '0'
-  #Patch: '0'
-
-
 steps:
 
 - script: |
@@ -44,15 +38,6 @@ steps:
     packDirectory: '$(Build.ArtifactStagingDirectory)'
     versionEnvVar: 'nugetVersion'
     versioningScheme: 'byEnvVar'
-
-#- task: NuGetCommand@2
-#  displayName: 'nuget pack'
-#  inputs:
-#    command: pack
-#    versioningScheme: byPrereleaseNumber
-#    majorVersion: '$(Major)'
-#    minorVersion: '$(Minor)'
-#    patchVersion: '$(Patch)'
 
 - task: NuGetAuthenticate@1
   displayName: 'NuGet Authenticate'
