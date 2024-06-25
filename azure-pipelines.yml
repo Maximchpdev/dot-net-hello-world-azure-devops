@@ -9,7 +9,8 @@ variables:
   major: '1'
   minor: '0'
   revision: $[counter(variables['minor'], 1)] # This will get reset every time minor gets bumped.
-  nugetVersion: '$(major).$(minor).$(revision)'
+  branchName: $[replace(variables['Build.SourceBranch'], 'refs/heads/', '')]
+  nugetVersion: '$(branchName)_$(major).$(minor).$(revision)'
   buildConfiguration: 'Release'
 
 stages:
@@ -29,7 +30,17 @@ stages:
         arguments: '--configuration $(buildConfiguration)'
         projects: '**/*.csproj'
 
+    - task: UniversalPackages@0
+      inputs:
+       command: 'publish'
+       publishDirectory: '$(Build.ArtifactStagingDirectory)'
+       feedsToUsePublish: 'internal'
+       vstsFeedPublish: '6686e02d-1277-4c75-9a7a-50a9dc5e0d1a/87b0cdd8-0adc-413d-80d3-99fda95d5c7c'
+       vstsFeedPackagePublish: 'helloworld-artifacts'
+       versionOption: 'patch'
+
     - task: DotNetCoreCLI@2
+      condition: eq(variables['Build.SourceBranch'], 'refs/heads/devops')
       displayName: "dotnet pack"
       inputs:
         command: 'pack'
@@ -41,9 +52,11 @@ stages:
         nobuild: true
 
     - task: NuGetAuthenticate@1
+      condition: eq(variables['Build.SourceBranch'], 'refs/heads/devops')
       displayName: 'NuGet Authenticate'
 
     - task: NuGetCommand@2
+      condition: eq(variables['Build.SourceBranch'], 'refs/heads/devops')
       displayName: 'nuget push'
       inputs:
         command: 'push'
