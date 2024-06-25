@@ -1,4 +1,5 @@
 trigger:
+
 - main
 
 pool:
@@ -76,3 +77,15 @@ stages:
     - script: |
         echo "NuGet Package Version: $(nugetVersion)"
       displayName: 'Echo NuGet Version'
+
+    - task: SendEmail@1
+      inputs:
+        To: 'maximcdev@gmail.com'
+        From: 'maximcdev@gmail.com'
+        Subject: 'Azure Pipelines - Build Status: $(Build.Result) - Build $(Build.BuildNumber)'
+        Body: 'Pipeline on branch $(Build.SourceBranch) completed $(Build.Reason) with result $(Build.Result)'
+        BodyAsHtml: false
+        AddAttachment: false
+        SmtpServer: 'smtp.gmail.com'
+        SmtpUsername: 'maximcdev@gmail.com'
+        SmtpPassword: 'mucpoltqzxzmywsy'
