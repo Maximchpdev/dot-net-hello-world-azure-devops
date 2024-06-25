@@ -35,7 +35,7 @@ steps:
   displayName: "dotnet pack"
   inputs:
     command: 'pack'
-    arguments: '--configuration $(buildConfiguration) /p:PackageVersion=$(versionNumber)'
+    arguments: '--configuration $(buildConfiguration) /p:PackageVersion=$(versionNumber) --output $(Build.ArtifactStagingDirectory)'
     packagesToPack: '**/*.csproj'
     nobuild: true
     versioningScheme: 'off'
