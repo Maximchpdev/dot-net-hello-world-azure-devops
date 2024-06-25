@@ -30,3 +30,35 @@ steps:
     command: 'build'
     arguments: '--configuration $(buildConfiguration)'
     projects: '**/*.csproj'
+
+- task: DotNetCoreCLI@2
+  displayName: "dotnet pack"
+  inputs:
+    command: 'pack'
+    arguments: '--configuration $(buildConfiguration) /p:PackageVersion=$(versionNumber) --output $(Build.ArtifactStagingDirectory)/$(Build.BuildId)/'
+    packagesToPack: '**/*.csproj'
+    nobuild: true
+    versioningScheme: 'off'
+
+#- task: NuGetCommand@2
+#  displayName: 'nuget pack'
+#  inputs:
+#    command: pack
+#    versioningScheme: byPrereleaseNumber
+#    majorVersion: '$(Major)'
+#    minorVersion: '$(Minor)'
+#    patchVersion: '$(Patch)'
+
+- task: NuGetAuthenticate@1
+  displayName: 'NuGet Authenticate'
+- task: NuGetCommand@2
+  displayName: 'nuget push'
+  inputs:
+    command: 'push'
+    feedsToUse: 'select'
+    packagesToPush: '$(Build.ArtifactStagingDirectory)/$(Build.BuildId)/**/*.nupkg;!$(Build.ArtifactStagingDirectory)/$(Build.BuildId)/**/*.symbols.nupkg'
+    nuGetFeedType: 'internal'
+    publishVstsFeed: 'Dot Net Hello World/my-artifacts'
+    vstsFeed: 'Dot Net Hello World/my-artifacts'
+    versioningScheme: 'off'
+    allowPackageConflicts: true
