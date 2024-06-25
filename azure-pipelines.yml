@@ -34,7 +34,7 @@ steps:
   displayName: "dotnet pack"
   inputs:
     command: 'pack'
-    arguments: '--configuration $(buildConfiguration) /p:PackageVersion=1.1.1 --output $(Build.ArtifactStagingDirectory)'
+    arguments: '--configuration $(buildConfiguration) /p:PackageVersion=$(versionNumber) --output $(Build.ArtifactStagingDirectory)/$(Build.BuildId)/'
     packagesToPack: '**/*.csproj'
     nobuild: true
     versioningScheme: 'off'
@@ -55,7 +55,7 @@ steps:
   inputs:
     command: 'push'
     feedsToUse: 'select'
-    packagesToPush: '$(Build.ArtifactStagingDirectory)/**/*.nupkg;!$(Build.ArtifactStagingDirectory)/**/*.symbols.nupkg'
+    packagesToPush: '$(Build.ArtifactStagingDirectory)/$(Build.BuildId)/**/*.nupkg;!$(Build.ArtifactStagingDirectory)/$(Build.BuildId)/**/*.symbols.nupkg'
     nuGetFeedType: 'internal'
     publishVstsFeed: 'Dot Net Hello World/my-artifacts'
     vstsFeed: 'Dot Net Hello World/my-artifacts'
