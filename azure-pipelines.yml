@@ -1,0 +1,58 @@
+# ASP.NET Core
+# Build and test ASP.NET Core projects targeting .NET Core.
+# Add steps that run tests, create a NuGet package, deploy, and more:
+# https://docs.microsoft.com/azure/devops/pipelines/languages/dotnet-core
+
+trigger:
+- main
+
+pool:
+  #vmImage: ubuntu-latest
+  name: my-ubuntu
+
+variables:
+  buildConfiguration: 'Release'
+  versionNumber: '$(Build.BuildNumber)'
+  #versionNumber: '1.0.0'
+  #Major: '1'
+  #Minor: '0'
+  #Patch: '0'
+
+
+steps:
+
+- task: DotNetCoreCLI@2
+  displayName: 'dotnet build'
+  inputs:
+    command: 'build'
+    arguments: '--configuration $(buildConfiguration)'
+    projects: '**/*.csproj'
+- task: DotNetCoreCLI@2
+  displayName: "dotnet pack"
+  inputs:
+    command: 'pack'
+    arguments: '--configuration $(buildConfiguration) /p:PackageVersion=$(versionNumber)'
+    packagesToPack: '**/*.csproj'
+    nobuild: true
+    versioningScheme: 'off'
+
+#- task: NuGetCommand@2
+#  displayName: 'nuget pack'
+#  inputs:
+#    command: pack
+#    versioningScheme: byPrereleaseNumber
+#    majorVersion: '$(Major)'
+#    minorVersion: '$(Minor)'
+#    patchVersion: '$(Patch)'
+
+- task: NuGetCommand@2
+  displayName: 'nuget push'
+  inputs:
+    command: 'push'
+    feedsToUse: 'select'
+    packagesToPush: '$(Build.ArtifactStagingDirectory)/**/*.nupkg;!$(Build.ArtifactStagingDirectory)/**/*.symbols.nupkg'
+    nuGetFeedType: 'internal'
+    publishVstsFeed: 'Dot Net Hello World/my-artifacts'
+    versioningScheme: byPrereleaseNumber
+    allowPackageConflicts: true
+    
