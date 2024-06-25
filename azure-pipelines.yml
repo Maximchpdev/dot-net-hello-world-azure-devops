@@ -61,4 +61,3 @@ steps:
     vstsFeed: 'Dot Net Hello World/my-artifacts'
     versioningScheme: 'off'
     allowPackageConflicts: true
-    
