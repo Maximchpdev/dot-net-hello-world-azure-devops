@@ -1,8 +1,3 @@
-# ASP.NET Core
-# Build and test ASP.NET Core projects targeting .NET Core.
-# Add steps that run tests, create a NuGet package, deploy, and more:
-# https://docs.microsoft.com/azure/devops/pipelines/languages/dotnet-core
-
 trigger:
 - main
 
@@ -17,39 +12,54 @@ variables:
   nugetVersion: '$(major).$(minor).$(revision)'
   buildConfiguration: 'Release'
 
-steps:
+stages:
+- stage: BuildAndPackage
+  jobs:
+  - job: BuildAndPackageJob
+    displayName: 'Build and Package'
+    steps:
+    - script: |
+        rm -rf $(Build.ArtifactStagingDirectory)/*
+      displayName: 'Clean build directory'
 
-- script: |
-    rm -rf $(Build.ArtifactStagingDirectory)/*
-  displayName: 'Clean build directory'
-- task: DotNetCoreCLI@2
-  displayName: 'dotnet build'
-  inputs:
-    command: 'build'
-    arguments: '--configuration $(buildConfiguration)'
-    projects: '**/*.csproj'
+    - task: DotNetCoreCLI@2
+      displayName: 'dotnet build'
+      inputs:
+        command: 'build'
+        arguments: '--configuration $(buildConfiguration)'
+        projects: '**/*.csproj'
 
-- task: DotNetCoreCLI@2
-  displayName: "dotnet pack"
-  inputs:
-    command: 'pack'
-    configuration: $(BuildConfiguration)
-    packagesToPack: '**/*.csproj'
-    packDirectory: '$(Build.ArtifactStagingDirectory)'
-    versionEnvVar: 'nugetVersion'
-    versioningScheme: 'byEnvVar'
-    nobuild: true
+    - task: DotNetCoreCLI@2
+      displayName: "dotnet pack"
+      inputs:
+        command: 'pack'
+        configuration: $(BuildConfiguration)
+        packagesToPack: '**/*.csproj'
+        packDirectory: '$(Build.ArtifactStagingDirectory)'
+        versionEnvVar: 'nugetVersion'
+        versioningScheme: 'byEnvVar'
+        nobuild: true
 
-- task: NuGetAuthenticate@1
-  displayName: 'NuGet Authenticate'
-- task: NuGetCommand@2
-  displayName: 'nuget push'
-  inputs:
-    command: 'push'
-    feedsToUse: 'select'
-    packagesToPush: '$(Build.ArtifactStagingDirectory)/**/*.nupkg;!$(Build.ArtifactStagingDirectory)/**/*.symbols.nupkg'
-    nuGetFeedType: 'internal'
-    publishVstsFeed: 'Dot Net Hello World/my-artifacts'
-    vstsFeed: 'Dot Net Hello World/my-artifacts'
-    versioningScheme: 'off'
-    allowPackageConflicts: true
+    - task: NuGetAuthenticate@1
+      displayName: 'NuGet Authenticate'
+
+    - task: NuGetCommand@2
+      displayName: 'nuget push'
+      inputs:
+        command: 'push'
+        feedsToUse: 'select'
+        packagesToPush: '$(Build.ArtifactStagingDirectory)/**/*.nupkg;!$(Build.ArtifactStagingDirectory)/**/*.symbols.nupkg'
+        nuGetFeedType: 'internal'
+        publishVstsFeed: 'Dot Net Hello World/my-artifacts'
+        vstsFeed: 'Dot Net Hello World/my-artifacts'
+        versioningScheme: 'off'
+        allowPackageConflicts: true
+
+- stage: EchoVersion
+  jobs:
+  - job: EchoVersionJob
+    displayName: 'Echo Version'
+    steps:
+    - script: |
+        echo "NuGet Package Version: $(nugetVersion)"
+      displayName: 'Echo NuGet Version'
