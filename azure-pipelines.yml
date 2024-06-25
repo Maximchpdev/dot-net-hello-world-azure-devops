@@ -1,6 +1,7 @@
 trigger:
 
 - main
+- devops
 
 pool:
   #vmImage: ubuntu-latest
