@@ -58,8 +58,8 @@ steps:
     feedsToUse: 'select'
     packagesToPush: '$(Build.ArtifactStagingDirectory)/**/*.nupkg;!$(Build.ArtifactStagingDirectory)/**/*.symbols.nupkg'
     nuGetFeedType: 'internal'
-    publishVstsFeed: 'my-artifacts'
-    vstsFeed: 'my-artifacts'
+    publishVstsFeed: 'Dot Net Hello World/my-artifacts'
+    vstsFeed: 'Dot Net Hello World/my-artifacts'
     versioningScheme: 'off'
     allowPackageConflicts: true
     
