@@ -3,8 +3,6 @@
 # Add steps that run tests, create a NuGet package, deploy, and more:
 # https://docs.microsoft.com/azure/devops/pipelines/languages/dotnet-core
 
-name: 1.0.$(Rev:r)
-
 trigger:
 - main
 
@@ -13,8 +11,12 @@ pool:
   name: my-ubuntu
 
 variables:
+  major: '1'
+  minor: '0'
+  revision: $[counter(variables['minor'], 1)] # This will get reset every time minor gets bumped.
+  nugetVersion: '$(major).$(minor).$(revision)'
   buildConfiguration: 'Release'
-  versionNumber: '1.1.$(Build.BuildId)'
+
   #versionNumber: '1.0.0'
   #Major: '1'
   #Minor: '0'
@@ -38,9 +40,10 @@ steps:
   inputs:
     command: 'pack'
     configuration: $(BuildConfiguration)
-    packagesToPack: '**/$(ProjectName)*.csproj'
-    packDirectory: '$(build.artifactStagingDirectory)'
-    versioningScheme: byBuildNumber # https://learn.microsoft.com/en-us/azure/devops/pipelines/tasks/build/dotnet-core-cli?view=azure-devops#yaml-snippet
+    packagesToPack: '**/*.csproj'
+    packDirectory: '$(Build.ArtifactStagingDirectory)'
+    versionEnvVar: 'nugetVersion'
+    versioningScheme: 'byEnvVar'
 
 #- task: NuGetCommand@2
 #  displayName: 'nuget pack'
