@@ -1,17 +1,19 @@
 trigger:
 
 - main
+- devops
 
 pool:
   #vmImage: ubuntu-latest
   name: my-ubuntu
+
 
 variables:
   major: '1'
   minor: '0'
   revision: $[counter(variables['minor'], 1)] # This will get reset every time minor gets bumped.
   branchName: $[replace(variables['Build.SourceBranch'], 'refs/heads/', '')]
-  nugetVersion: '$(branchName)_$(major).$(minor).$(revision)'
+  nugetVersion: '$(major).$(minor).$(revision)-$(branchName)'
   buildConfiguration: 'Release'
 
 stages:
@@ -20,6 +22,24 @@ stages:
   - job: BuildAndPackageJob
     displayName: 'Build and Package'
     steps:
+    
+    - checkout: self #needed for sonarcloud
+      fetchDepth: 0
+
+    - task: SonarCloudPrepare@2
+      condition: eq(variables['Build.SourceBranch'], 'refs/heads/devops')
+      inputs:
+        SonarCloud: 'sonarcloud'
+        organization: 'maximilianchp2024'
+        scannerMode: 'CLI'
+        projectKey: 'maximilianchp_Dot-Net-Hello-World'
+        projectName: 'Dot Net Hello World'
+        configMode: 'file'
+        
+    - task: SonarCloudAnalyze@2
+      inputs:
+        jdkversion: 'JAVA_HOME_17_X64'
+
     - script: |
         rm -rf $(Build.ArtifactStagingDirectory)/*
       displayName: 'Clean build directory'
