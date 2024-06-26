@@ -4,7 +4,8 @@ trigger:
 - devops
 
 pool:
-  vmImage: ubuntu-latest
+  #vmImage: ubuntu-latest
+  name: my-ubuntu
 
 
 variables:
