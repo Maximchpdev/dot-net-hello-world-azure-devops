@@ -13,7 +13,7 @@ variables:
   minor: '0'
   revision: $[counter(variables['minor'], 1)] # This will get reset every time minor gets bumped.
   branchName: $[replace(variables['Build.SourceBranch'], 'refs/heads/', '')]
-  nugetVersion: '$(branchName)_$(major).$(minor).$(revision)'
+  nugetVersion: '$(major).$(minor).$(revision)-$(branchName)'
   buildConfiguration: 'Release'
 
 stages:
