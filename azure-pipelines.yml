@@ -21,6 +21,19 @@ stages:
   - job: BuildAndPackageJob
     displayName: 'Build and Package'
     steps:
+    
+    - checkout: self #needed for sonarcloud
+      fetchDepth: 0
+
+    - task: SonarCloudPrepare@2
+      inputs:
+        SonarCloud: 'sonarcloud'
+        organization: 'maximilianchp2024'
+        scannerMode: 'CLI'
+        projectKey: 'maximilianchp_Dot-Net-Hello-World'
+        projectName: 'Dot Net Hello World'
+        configMode: 'file'
+
     - script: |
         rm -rf $(Build.ArtifactStagingDirectory)/*
       displayName: 'Clean build directory'
