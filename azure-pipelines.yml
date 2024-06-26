@@ -36,9 +36,9 @@ stages:
         projectName: 'Dot Net Hello World'
         configMode: 'file'
         
-     - task: SonarCloudAnalyze@2
-       inputs:
-         jdkversion: 'JAVA_HOME_17_X64'
+    - task: SonarCloudAnalyze@2
+      inputs:
+        jdkversion: 'JAVA_HOME_17_X64'
 
     - script: |
         rm -rf $(Build.ArtifactStagingDirectory)/*
