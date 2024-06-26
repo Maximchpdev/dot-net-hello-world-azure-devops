@@ -5,7 +5,7 @@ trigger:
 
 pool:
   vmImage: ubuntu-latest
-  #name: my-ubuntu
+
 
 variables:
   major: '1'
