@@ -26,6 +26,7 @@ stages:
       fetchDepth: 0
 
     - task: SonarCloudPrepare@2
+      condition: eq(variables['Build.SourceBranch'], 'refs/heads/devops')
       inputs:
         SonarCloud: 'sonarcloud'
         organization: 'maximilianchp2024'
