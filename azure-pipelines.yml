@@ -74,7 +74,7 @@ stages:
 
     - task: NuGetAuthenticate@1
       condition: eq(variables['Build.SourceBranch'], 'refs/heads/devops')
-      displayName: 'NuGet Authenticate'
+      displayName: 'nuget authenticate'
 
     - task: NuGetCommand@2
       condition: eq(variables['Build.SourceBranch'], 'refs/heads/devops')
