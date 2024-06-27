@@ -13,7 +13,7 @@ variables:
   minor: '0'
   revision: $[counter(variables['minor'], 1)] # This will get reset every time minor gets bumped.
   branchName: $[replace(variables['Build.SourceBranch'], 'refs/heads/', '')]
-  nugetVersion: '$(major).$(minor).$(revision)-$(branchName)'
+  nugetVersion: '$(major).$(minor).$(revision)'
   buildConfiguration: 'Release'
 
 stages:
@@ -71,10 +71,11 @@ stages:
         versionEnvVar: 'nugetVersion'
         versioningScheme: 'byEnvVar'
         nobuild: true
+        buildProperties: 'PackageIdPrefix=$(branchName)_$(nugetVersion)'
 
     - task: NuGetAuthenticate@1
       condition: eq(variables['Build.SourceBranch'], 'refs/heads/devops')
-      displayName: 'NuGet Authenticate'
+      displayName: 'nuget authenticate'
 
     - task: NuGetCommand@2
       condition: eq(variables['Build.SourceBranch'], 'refs/heads/devops')
