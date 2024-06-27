@@ -25,24 +25,18 @@ stages:
     
     - checkout: self #needed for sonarcloud
       fetchDepth: 0
-
-    - task: SonarCloudPrepare@2
-      condition: eq(variables['Build.SourceBranch'], 'refs/heads/devops')
-      inputs:
-        SonarCloud: 'sonarcloud'
-        organization: 'maximilianchp2024'
-        scannerMode: 'CLI'
-        projectKey: 'maximilianchp_Dot-Net-Hello-World'
-        projectName: 'Dot Net Hello World'
-        configMode: 'file'
         
-    - task: SonarCloudAnalyze@2
-      inputs:
-        jdkversion: 'JAVA_HOME_17_X64'
-
     - script: |
         rm -rf $(Build.ArtifactStagingDirectory)/*
       displayName: 'Clean build directory'
+
+    - task: SonarCloudPrepare@2
+      inputs:
+        SonarCloud: 'sonarcloud'
+        organization: 'maximilianchp2024'
+        scannerMode: 'MSBuild'
+        projectKey: 'maximilianchp_Dot-Net-Hello-World'
+        projectName: 'Dot Net Hello World'
 
     - task: DotNetCoreCLI@2
       displayName: 'dotnet build'
@@ -50,6 +44,11 @@ stages:
         command: 'build'
         arguments: '--configuration $(buildConfiguration)'
         projects: '**/*.csproj'
+
+    - task: SonarCloudAnalyze@2
+      condition: eq(variables['Build.SourceBranch'], 'refs/heads/devops')
+      inputs:
+        jdkversion: 'JAVA_HOME_17_X64'
 
     - task: UniversalPackages@0
       inputs:
@@ -75,7 +74,7 @@ stages:
 
     - task: NuGetAuthenticate@1
       condition: eq(variables['Build.SourceBranch'], 'refs/heads/devops')
-      displayName: 'nuget authenticate'
+      displayName: 'NuGet Authenticate'
 
     - task: NuGetCommand@2
       condition: eq(variables['Build.SourceBranch'], 'refs/heads/devops')
@@ -98,3 +97,4 @@ stages:
     - script: |
         echo "NuGet Package Version: $(nugetVersion)"
       displayName: 'Echo NuGet Version'
+
